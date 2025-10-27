@@ -1,1 +1,43 @@
 @import "tailwindcss";
+
+@theme {
+    --color-primary: #39E079;
+    --color-light: #f6f8f7;
+    --color-dark: #0f1323
+}
+
+@font-face {
+    font-family: "Urbanist";
+    src: url('https://fonts.googleapis.com/css2?family=Urbanist');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Outfit";
+    src: url('https://fonts.googleapis.com/css2?family=Outfit');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Outfit";
+    src: url('https://fonts.googleapis.com/css2?family=Outfit:wght@700');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Urbanist";
+    src: url('https://fonts.googleapis.com/css2?family=Urbanist:wght@700');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    font-family: "Outfit", sans-serif;
+}

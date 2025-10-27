@@ -1,0 +1,74 @@
+---
+import CreateUserModalButton from "@/components/CreateUserModalButton.astro"
+import DotsMenu from "@/components/dotsMenu.astro"
+
+const res = await fetch(`${import.meta.env.API_BASE_URL}/api/v1/users`)
+const data = await res.json()
+
+interface User {
+    name: String,
+    last_name: String,  
+    documentType?: String,
+    document?: Number,
+    role: String,
+    specialty: String | null,
+    phone: String,
+    status: String,
+    createdAt: String
+}
+
+const USERS: User[] = data.data
+---
+
+<section class="px-12 mt-12">
+    <header class="flex justify-between">
+        <h2 class="font-bold text-4xl">Gestión de usuarios</h2>
+        <CreateUserModalButton>
+            + Agregar usuario
+        </CreateUserModalButton>
+    </header>
+    <div class="mt-14 overflow-x-auto rounded-lg border border-stone-200 bg-white">
+        <table class="w-full table-auto">
+            <thead class="border-b border-stone-200 bg-stone-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600">User</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600">Role</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600">Date Joined</th>
+                    <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-200">
+                {
+                    USERS.map((user: User) => (
+                        <tr>
+                            <td class="whitespace-nowrap px-6 py-4 flex items-center gap-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="h-10 w-10 flex-shrink-0 rounded-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD3u1xJSvA_eF2QJRHLNALx-Caq7NVm8IdcsiUfAIe5tZ4SRTlwrGdDcehKs0h2BcfawozT-J5wjIE9BvbNFIdlPfhFEOE-qxrhL2SBO_ai76Dh0okB7-WmbMixvLJjv5goTt2ZPL9Saz1ZiPjEY0bIL_fNqA-M9rBb_TMFhjCfrBwIsc6k1WjzopsOIMB1u592JOys33hb61c5VKHGLC4-tkSN9nYXRQ4jHPRNvwCUuxOMllTtnDPfwkYh6n2oJODnfLeilY2F5UJl')"></div>
+                                    <div>
+                                        <p class="font-medium">{user.name}</p>
+                                        <p class="text-sm text-stone-500">{user.last_name}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="whitespace-nowrap px-6 py-4">{user.role}</td>
+                            <td class="whitespace-nowrap px-6 py-4">
+                                <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                    <span class="mr-1.5 h-2 w-2 rounded-full bg-green-500"></span>
+                                    Active
+                                </span>
+                            </td>
+                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-500 dark:text-stone-400">{user.createdAt}</td>
+                            <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                <DotsMenu userID={user.name}/>
+                            </td>
+                        </tr>
+                    ))
+                }
+            </tbody>
+        </table>
+    </div>
+    <footer class="mt-4">
+        <p class="text-stone-600">Mostrando 1 a 4 de 4 resultados</p>
+    </footer>
+</section>
