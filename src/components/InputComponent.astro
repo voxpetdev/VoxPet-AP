@@ -1,0 +1,11 @@
+---
+interface Props {
+    name: String,
+    inputType?: String,
+    text: String,
+    required?: Boolean
+}
+
+const { inputType, text, name, required } = Astro.props
+---
+<input id={name} class="border-2 py-2 px-3 border-stone-200 outline-none rounded-lg focus:border-primary" name={name} type={inputType ?? "text"} placeholder={text} {required}>
