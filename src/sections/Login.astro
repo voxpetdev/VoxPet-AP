@@ -1,0 +1,103 @@
+---
+import LOGO from '@/assets/LOGO.svg'
+---
+<section class="min-h-dvh w-screen grid place-items-center bg-gray-100 dark:bg-gray-900">
+    <form id="loginForm" class="space-y-6 bg-white shadow-md border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700 p-6 min-w-md" method="POST">
+        <img src={LOGO.src} alt="Descripción de la imagen" class="w-34 h-auto rounded-lg mx-auto" />
+        <h3 class="text-center -mt-3">
+            <span class="font-black text-5xl text-[#B392B7]">Vox</span>
+            <span class="font-black text-5xl text-[#073F4E]">Pet</span>
+        </h3>
+        <p class="text-sm text-center text-gray-400">
+            Acceda al panel administrativo
+        </p>
+        <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Email" required />
+        <input type="password" name="password" id="password" placeholder="Contraseña" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
+        <section class="flex items-start justify-between">
+            <a href="#" class="text-sm font-light text-stone-600 hover:underline dark:text-stone-200">
+                Olvidaste tu contraseña?
+            </a>
+        </section>
+    
+        <button type="submit" id="submit" class="w-full flex justify-center text-white bg-[#073F4E] cursor-pointer hover:bg-teal-800 focus:ring-4 font-medium rounded-lg text-m px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-900 disabled:cursor-not-allowed disabled:hover:bg-blue-900">
+            Iniciar sesión
+        </button>
+    </form>
+</section>
+
+<style is:inline>
+    .loading-icon {
+        animation: spin 1s linear infinite;
+        vertical-align: middle;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+</style>
+
+<script>
+    import Swal from "sweetalert2"
+    const form = document.getElementById('loginForm') as HTMLFormElement
+    const submitButton = document.getElementById('submit') as HTMLButtonElement
+
+    const loadingSVG = `
+    <svg
+        class="loading-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M12 3a9 9 0 1 0 9 9"></path>
+    </svg>
+    `
+
+    form?.addEventListener('submit', async (e) => {
+        e.preventDefault()
+
+        submitButton.disabled = true
+        submitButton.innerHTML = loadingSVG
+
+        const data = {
+            username: form.email.value,
+            password: form.password.value
+        }
+
+        try {
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+    
+            if(res.ok) {
+                window.location.href = "/panel/users"
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error...',
+                    text: 'El nombre de usuario o contraseña no coinciden.',
+                    theme: 'auto'
+                })
+            }
+        } catch (error) {
+            console.error(error)
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'No se pudo conectar con el servidor.',
+                theme: 'auto'
+            })
+        } finally {
+            submitButton.disabled = false
+            submitButton.innerHTML = 'Iniciar Sesión'
+        } 
+    })
+</script>
