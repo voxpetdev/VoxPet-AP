@@ -1,0 +1,78 @@
+---
+import DotsMenu from "@/components/dotsMenu.astro"
+
+const { class: className } = Astro.props
+const cookie = Astro.cookies.get("access_token")?.value
+
+const res = await fetch(`${import.meta.env.API_BASE_URL}/api/v1/users`, { headers: { Authorization: `Bearer ${cookie}` } })
+const data = await res.json()
+
+function getRole(roleID: string) {
+    if (roleID === "2f0a87cb-83e0-4838-bf2d-3a93d992dbfb") return "Usuario"
+    if (roleID === "5b6a4c0f-8ff5-4d8a-bc79-1d7998e46803") return "Veterinario"
+    if (roleID === "b50b032e-58e8-4899-a2ec-004ac2ca50e1") return "Root"
+    if (roleID === "bf2b5102-3e41-43ee-8455-69fa0d2c638a") return "Administrador de clínica"
+}
+
+interface User {
+    name: string,
+    last_name: string,  
+    documentType?: string,
+    document?: number,
+    email: string,
+    roleID: string,
+    specialty: string | null,
+    phone: string,
+    status: string,
+    createdAt: string,
+    updatedAt: string
+}
+
+const USERS: User[] = data.data
+---
+<div class:list={["overflow-x-auto rounded-lg border border-stone-200 dark:border-zinc-700 bg-gray-100 dark:bg-gray-900", className]}>
+    <table class="w-full table-auto">
+        <thead class="border-b border-stone-200 dark:border-zinc-700 bg-gray-100 dark:bg-gray-900">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600">Usuario</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600">Rol</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600">Estado</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600">Fecha de ingreso</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600">Ultimo cambio</th>
+                <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-200 dark:divide-zinc-700" id="tbody">
+            {
+                USERS?.map((user: User) => (
+                    <tr>
+                        <td class="whitespace-nowrap px-6 py-4 flex items-center gap-4">
+                            <div class="flex items-center gap-4">
+                                <div class="h-10 w-10 flex-shrink-0 rounded-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD3u1xJSvA_eF2QJRHLNALx-Caq7NVm8IdcsiUfAIe5tZ4SRTlwrGdDcehKs0h2BcfawozT-J5wjIE9BvbNFIdlPfhFEOE-qxrhL2SBO_ai76Dh0okB7-WmbMixvLJjv5goTt2ZPL9Saz1ZiPjEY0bIL_fNqA-M9rBb_TMFhjCfrBwIsc6k1WjzopsOIMB1u592JOys33hb61c5VKHGLC4-tkSN9nYXRQ4jHPRNvwCUuxOMllTtnDPfwkYh6n2oJODnfLeilY2F5UJl')"></div>
+                                <div>
+                                    <p class="font-medium">{`${user.name} ${user.last_name}`}</p>
+                                    <p class="text-sm text-stone-500">{user.email}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="whitespace-nowrap px-6 py-4">{getRole(user.roleID)}</td>
+                        <td class="whitespace-nowrap px-6 py-4">
+                            <span class="inline-flex items-center rounded-full bg-green-100 dark:bg-green-600 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:text-green-100">
+                                <span class="mr-1.5 h-2 w-2 rounded-full bg-green-500 dark:bg-green-800 "></span>
+                                Active
+                            </span>
+                        </td>
+                        <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-500 dark:text-stone-400">{new Date(user.createdAt).toLocaleDateString()}</td>
+                        <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-500 dark:text-stone-400">{new Date(user.updatedAt).toLocaleString()}</td>
+                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                            <DotsMenu userID={user.name}/>
+                        </td>
+                    </tr>
+                ))
+            }
+        </tbody>
+    </table>
+</div>
+<footer class="mt-4">
+    <p class="text-zinc-700">Mostrando 1 a {USERS?.length | 0} de {USERS?.length | 0} resultados</p>
+</footer>

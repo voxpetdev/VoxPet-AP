@@ -1,13 +1,47 @@
-<aside class="p-6 flex flex-col justify-between min-w-3xs w-fit h-full gap-8 border-r border-stone-200 min-h-screen shadow-sm text-dark dark:text-light">
+---
+import LOGO from "@/assets/LOGO.svg"
+---
+<aside class="p-6 flex flex-col justify-between min-w-3xs w-fit h-full gap-8 border-r border-stone-200 dark:border-zinc-700 min-h-screen shadow-sm text-dark dark:text-light">
     <div class="flex flex-col gap-12">
         <figure class="flex justify-center items-center gap-4 justify-self-start">
-            <img class="w-12 h-12 rounded-full bg-primary text-white" src="/public/favicon.svg" alt="VoxPet - logo">
+            <img class="w-12 h-12 rounded-full bg-primary text-white" src={LOGO.src} alt="VoxPet - logo">
             <h4 class="text-lg font-bold">Admin Panel</h4>
         </figure>
         <nav class="flex flex-col w-full gap-4">
-            <a href="/home" class="rounded-lg hover:bg-primary/20 py-3 px-2 font-bold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">Inicio</a>
-            <a href="/panel/users" class="rounded-lg hover:bg-primary/20 py-3 px-2 font-bold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">Usuarios</a>
+            <a href="/home" class="rounded-lg bg-stone-600/10 hover:bg-primary/30 p-3 font-bold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">Inicio</a>
+            <a href="/panel/users" class="rounded-lg bg-stone-600/10 hover:bg-primary/30 p-3 font-bold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">Usuarios</a>
         </nav>
     </div>
-    <a href="" class="hover:bg-primary/20 w-fit py-2 px-3 rounded transition-all active:scale-95">Help</a>
+    <button id="logout" class="w-full bg-stone-600/10 hover:bg-red-400/20 py-2 px-3 rounded transition-all active:scale-95 cursor-pointer">Cerrar Sesión</button>
 </aside>
+
+<script>
+    import Swal from "sweetalert2"
+    const logoutButton = document.getElementById("logout") as HTMLButtonElement
+
+    logoutButton?.addEventListener("click", () => {
+        Swal.fire({
+            icon: "warning",
+            title: "Estas a punto de cerrar sesión",
+            theme: "auto",
+            showCancelButton: true,
+            cancelButtonText: "Cancelar",
+            cancelButtonColor: "red"
+        }).then( async (result) => {
+            if (result.isConfirmed) {
+                const res = await fetch("/api/logout", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                })
+
+                if (res.ok) return window.location.href = "/"
+
+                Swal.fire({
+                    icon: "error",
+                    title: "error",
+                    text: "Error interno del servidor"
+                })
+            }
+        })
+    })
+</script>

@@ -1,7 +1,7 @@
 ---
-import Layout from "../../layouts/Layout.astro"
+import Layout from "@/layouts/Layout.astro"
 import UsersPanel from "@/sections/UsersPanel.astro"
-import Aside from "../../sections/Aside.astro"
+import Aside from "@/sections/Aside.astro"
 
 const cookie = Astro.cookies.get("access_token")?.value
 if (!cookie) return Astro.redirect('/')
