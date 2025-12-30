@@ -21,7 +21,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
             httpOnly: true,
             secure: true,
             sameSite: 'strict',
-            maxAge: 60 * 60 * 24
+            maxAge: 60 * 60
         })
 
         return new Response(JSON.stringify(data), { status: data.code })

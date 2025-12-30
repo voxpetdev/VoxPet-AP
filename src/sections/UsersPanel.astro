@@ -1,25 +1,6 @@
 ---
 import CreateUserModalButton from "@/components/CreateUserModalButton.astro"
-import DotsMenu from "@/components/dotsMenu.astro"
-
-const cookie = Astro.cookies.get("access_token")?.value
-
-const res = await fetch(`${import.meta.env.API_BASE_URL}/api/v1/users`, { headers: { Authorization: `Bearer ${cookie}` } })
-const data = await res.json()
-
-interface User {
-    name: string,
-    last_name: string,  
-    documentType?: string,
-    document?: number,
-    role: string,
-    specialty: string | null,
-    phone: string,
-    status: string,
-    createdAt: string
-}
-
-const USERS: User[] = data.data
+import UsersTable from "@/components/UsersTable.astro"
 ---
 
 <section class="px-12 mt-12 text-stone-800 dark:text-stone-200">
@@ -29,61 +10,38 @@ const USERS: User[] = data.data
             + Agregar usuario
         </CreateUserModalButton>
     </header>
-    <div class="mt-14 overflow-x-auto rounded-lg border border-stone-200 dark:border-stone-950 bg-gray-100 dark:bg-gray-900">
-        <table class="w-full table-auto">
-            <thead class="border-b border-stone-200 dark:border-stone-950 bg-gray-100 dark:bg-gray-900">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600">User</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600">Role</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600">Status</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600">Date Joined</th>
-                    <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-stone-200 dark:divide-stone-950" id="tbody">
-                {
-                    USERS?.map((user: User) => (
-                        <tr>
-                            <td class="whitespace-nowrap px-6 py-4 flex items-center gap-4">
-                                <div class="flex items-center gap-4">
-                                    <div class="h-10 w-10 flex-shrink-0 rounded-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD3u1xJSvA_eF2QJRHLNALx-Caq7NVm8IdcsiUfAIe5tZ4SRTlwrGdDcehKs0h2BcfawozT-J5wjIE9BvbNFIdlPfhFEOE-qxrhL2SBO_ai76Dh0okB7-WmbMixvLJjv5goTt2ZPL9Saz1ZiPjEY0bIL_fNqA-M9rBb_TMFhjCfrBwIsc6k1WjzopsOIMB1u592JOys33hb61c5VKHGLC4-tkSN9nYXRQ4jHPRNvwCUuxOMllTtnDPfwkYh6n2oJODnfLeilY2F5UJl')"></div>
-                                    <div>
-                                        <p class="font-medium">{user.name}</p>
-                                        <p class="text-sm text-stone-500">{user.last_name}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="whitespace-nowrap px-6 py-4">{user.role}</td>
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <span class="inline-flex items-center rounded-full bg-green-100 dark:bg-green-600 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:text-green-100">
-                                    <span class="mr-1.5 h-2 w-2 rounded-full bg-green-500 dark:bg-green-800 "></span>
-                                    Active
-                                </span>
-                            </td>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-500 dark:text-stone-400">{user.createdAt}</td>
-                            <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                                <DotsMenu userID={user.name}/>
-                            </td>
-                        </tr>
-                    ))
-                }
-            </tbody>
-        </table>
-    </div>
-    <footer class="mt-4">
-        <p class="text-stone-600">Mostrando 1 a 4 de 4 resultados</p>
-    </footer>
+    <UsersTable class="mt-14" server:defer>
+        <div slot="fallback" class="mt-14 min-h-4xl w-full flex justify-center items-center">
+            <h1 class="text-stone-200 font-semibold text-4xl">Cargando...</h1>
+        </div>
+    </UsersTable>
 </section>
 
 <script>
-    document.getElementById('tbody')?.addEventListener('click', (e) => {
-        const target = (e.target as HTMLElement).closest('.dots-menu')
-        if (!target) return
+    document.addEventListener('click', (e) => {
+        const clickedElement = e.target as HTMLElement
+        const dotsButton = clickedElement.closest(".dots-menu") as HTMLElement | null
+        const allMenus = document.querySelectorAll(".menu")
 
-        const menu = target.parentElement?.querySelector('.menu') as HTMLElement
-        if (menu) {
-            menu.classList.toggle('hidden')
-            menu.classList.toggle('flex')
+        if (!dotsButton) {
+            allMenus.forEach(menu => {
+                menu.classList.add("hidden")
+                menu.classList.remove("flex")
+            })
+            return
         }
+        
+        const currentMenu = dotsButton.parentElement?.querySelector('.menu') as HTMLElement
+        if (!currentMenu) return
+        
+        allMenus.forEach(menu => {
+            if (menu !== currentMenu) {
+                menu.classList.add("hidden")
+                menu.classList.remove("flex")
+            }
+        })
+        
+        currentMenu.classList.toggle('hidden')
+        currentMenu.classList.toggle('flex')
     })
 </script>
